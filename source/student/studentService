@@ -1,0 +1,27 @@
+var studentModel = require('./studentModel');
+var key = '123456789trytryrtyr'; // Your encryption key
+var Encryptor = require('simple-encryptor');
+
+// Initialize encryptor with the key
+var encryptor = Encryptor(key);
+
+module.exports.createStudentDBService = async (studentDetails) => {
+    try {
+        var studentModelData = new studentModel();
+
+        studentModelData.firstName = studentDetails.firstName;
+        studentModelData.lastName = studentDetails.lastName;
+        studentModelData.email = studentDetails.email;
+
+        // Encrypt password
+        var encryptedPassword = encryptor.encrypt(studentDetails.password);
+        studentModelData.password = encryptedPassword;
+
+        // Save student data to the database
+        await studentModelData.save();
+        return true;
+    } catch (error) {
+        console.log('Error saving student:', error);
+        return false;
+    }
+};
